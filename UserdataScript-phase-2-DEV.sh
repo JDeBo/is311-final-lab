@@ -1,10 +1,19 @@
 #!/bin/bash -xe
 apt update -y
-apt install nodejs unzip wget npm mysql-server -y
-wget https://aws-tc-largeobjects.s3.us-west-2.amazonaws.com/CUR-TF-200-ACCAP1-1-DEV/code.zip -P /home/ubuntu
-cd /home/ubuntu
-unzip code.zip -x "resources/codebase_partner/node_modules/*"
-cd resources/codebase_partner
+apt install nodejs unzip wget npm mysql-server git -y
+
+# Re-enable mysql_native_password auth plugin for MySQL 8.x/8.4 compatibility
+mysql_native_password_fix() {
+    if mysql --version 2>/dev/null | grep -q "8\.[4-9]"; then
+        echo "[mysqld]" >> /etc/mysql/mysql.conf.d/mysqld.cnf
+        echo "mysql_native_password=ON" >> /etc/mysql/mysql.conf.d/mysqld.cnf
+        service mysql restart
+    fi
+}
+mysql_native_password_fix
+
+git clone https://github.com/JDeBo/is311-final-lab.git /home/ubuntu/app
+cd /home/ubuntu/app/resources/codebase_partner
 npm install aws aws-sdk
 mysql -u root -e "CREATE USER 'nodeapp' IDENTIFIED WITH mysql_native_password BY 'student12'";
 mysql -u root -e "GRANT all privileges on *.* to 'nodeapp'@'%';"
@@ -27,8 +36,12 @@ export APP_DB_PASSWORD=student12
 export APP_DB_NAME=STUDENTS
 export APP_PORT=80
 npm start &
-echo '#!/bin/bash -xe
-cd /home/ubuntu/resources/codebase_partner
+echo "#!/bin/bash -xe
+cd /home/ubuntu/app/resources/codebase_partner
+export APP_DB_HOST=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
+export APP_DB_USER=nodeapp
+export APP_DB_PASSWORD=student12
+export APP_DB_NAME=STUDENTS
 export APP_PORT=80
-npm start' > /etc/rc.local
+npm start" > /etc/rc.local
 chmod +x /etc/rc.local
