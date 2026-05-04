@@ -147,7 +147,7 @@ To install the required web application and database on the virtual machine, use
 1. At the top of the AWS Management Console, in the search bar, search for and choose `EC2`
 2. Choose **Launch instance** > **Launch instance**, and then configure the following:
 3. In the **Name and tags** section, for **Name**, enter `FinalPOC`
-4. In the **Application and OS Images** section, under **Quick Start**, choose **Ubuntu**. Select **Ubuntu Server 22.04 LTS** from the dropdown.
+4. In the **Application and OS Images** section, under **Quick Start**, choose **Ubuntu**. Select **Ubuntu Server 26.04 LTS** from the dropdown.
 5. In the **Key pair** section, for **Key pair name**, choose **vockey**.
 6. In the **Network settings** section, configure the following:
    * Choose **Edit**.

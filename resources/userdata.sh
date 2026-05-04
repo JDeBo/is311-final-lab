@@ -3,7 +3,7 @@ apt update -y
 apt install nodejs unzip wget npm mysql-server git -y
 
 # Re-enable mysql_native_password auth plugin for MySQL 8.x/8.4 compatibility
-if mysql --version 2>/dev/null | grep -q "8\.[4-9]"; then
+if mysql --version 2>/dev/null | grep -qE "8\.[4-9]\.|[9-9][0-9]*\."; then
     echo "[mysqld]" >> /etc/mysql/mysql.conf.d/mysqld.cnf
     echo "mysql_native_password=ON" >> /etc/mysql/mysql.conf.d/mysqld.cnf
     service mysql restart
